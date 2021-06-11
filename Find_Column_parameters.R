@@ -51,7 +51,7 @@ plot(red.img)
 green.img = raster(green.imgs[1])
 plot(green.img)
 
-# Perform the basic image processing, subtraction and division 
+# Perform the basic image processing to visualize the image better
 
 subtraction = red.img - green.img
 #plot(subtraction)
@@ -156,4 +156,4 @@ plot_ly(data = data, x = ~x.in.cm,y = ~do)
 
 # Once satisfied with the selected range place the x values in the clamp1, clamp2, clamp3, clamp4, clamp5 cells of the Input file depending on how many 
 
-
+# If no clamp available fill the cell value with 0

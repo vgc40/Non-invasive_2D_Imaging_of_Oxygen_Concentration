@@ -1,16 +1,16 @@
-setwd("/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test/Images")
+setwd("C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/")
 rm(list=ls());graphics.off()
-# work with raster data
-#install.packages("raster")
-library(raster)
-#install.packages("rgdal")
-library(rgdal)
-#install.packages("tmap")
-library(tmap)
-#install.packages('Kendall')
-library(Kendall); library(plotly); library(crayon)
 
-#############################################################################
+# Install packages
+#install.packages("raster"); install.packages("rgdal");install.packages("tmap");install.packages('Kendall')
+
+# Load libraries
+library(raster); library(rgdal);library(tmap);library(Kendall); 
+library(plotly); library(crayon)
+
+graphics.off()
+
+#######################################################################
 
 # Set by manually by the user. Write down the column number you will be working with
 
