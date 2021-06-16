@@ -13,13 +13,13 @@ graphics.off()
 # This code is intended to help the user find the values for the necessary input parameters needed in the Input_col_parameters.csv
 
 #################################################################
-# Read in input calibration curve parameters and clamp location per column
+
 #NOTE: The user must pre-populate column and the calibration values into the input file before running this code. Follow instructions in the first row of input file. 
 
 #################################################################
 # Set up working directory and manually identify Column number
 
-Column.number = 1
+Column.number = 1 
 input.path = "C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/Input"
 
 ##############################################################
@@ -112,7 +112,7 @@ plot(result2, breaks=cuts, col = col1((length(cuts)-1)), zlim = c(0,DOmax),xlim=
 #####################################################
 #Examine if your column needs to be slightly rotated. Manually edit the angle based on what is needed
 ######################################################
-#Run fucntion
+#Run function
 rotate <- function(x, angle=0, resolution=res(x)) {
   y <- x; crs(y) <- "+proj=aeqd +ellps=sphere +lat_0=90 +lon_0=0"
   projectRaster(y, res=resolution,
@@ -121,9 +121,10 @@ rotate <- function(x, angle=0, resolution=res(x)) {
 
 # Manually adjust angle. 
 
- rotated.image = rotate(result2, -0.1) # Manually edit the number here to change the angle
+ rotated.image = rotate(result2, -0.55) # Manually edit the number here to change the angle
  
  plot(rotated.image, breaks=cuts, col = col1((length(cuts)-1)), zlim = c(0,DOmax),xlim=c(xmin(rotated.image),xmax(rotated.image)), ylim=c(ymin(rotated.image), ymax(rotated.image)))
+ abline (h = 6)
  
  # Once satisfied with the rotated image, copy the angle in the rot.num cell in the Input file
  
@@ -132,7 +133,7 @@ rotate <- function(x, angle=0, resolution=res(x)) {
  # Optimize x1,x2 and y1,y2 coordinates to crop the column image only to the optode portion
 ################################################################
 
-crop.extent = extent(0,30,5,14) # Optimize this values in cm the first to values are on the x axis and the second ones ar in the y axis
+crop.extent = extent(0,30,6,13.5) # Optimize this values in cm the first to values are on the x axis and the second ones ar in the y axis
 
 result.cropped = crop(rotated.image,crop.extent)
 
@@ -141,7 +142,7 @@ plot(result.cropped, breaks=cuts, col = col1((length(cuts)-1)), zlim = c(0,DOmax
 # Once satisfied with the crop extent, make sure to copy the values in the crop.extent.x1, crop.extent.x2, crop.extent.y1, crop.extent.y2 cells in the Input file
 
 #################################################################
-# Deterimine clamp locations
+# Determine clamp locations
 
 img.matrix = as.matrix(result.cropped)
 

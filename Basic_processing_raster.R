@@ -1,5 +1,7 @@
-setwd("C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/")
 rm(list=ls());graphics.off()
+
+home.path = ("C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/")
+setwd (home.path)
 
 # Install packages
 #install.packages("raster"); install.packages("rgdal");install.packages("tmap");install.packages('Kendall')
@@ -12,67 +14,55 @@ graphics.off()
 
 #######################################################################
 
-# Set by manually by the user. Write down the column number you will be working with
+# Set by manually by the user. Write down the column number you will be working with. Ensure that the folders selected below exist in the home directory
 
-Column.number = 0
+Column.number = 1
 Column.folder = "Column_0"
-Column.phase = "DI"  # Phase options are DI, Injection and Sampling
+Column.phase = "DI"  # Phase options are DI, Injection and Sampling. This can be replaced with treatment
 Folder = "/No_regressions" # folder for profiles with no regression
-DOmax = 10 #Max DO value that is expected Bump it up to 12-15 absolute MAx
-remove.data.start = 2 #in cm. Remove data the first XX cm
-remove.data.end = 28 # in cm Remove data starting ## cm
+DOmax = 10 #Max DO value that is expected after calibration values.
 
+# Use the variables below to trim the first and last couple of cm of the column to reduce edge effects.
 
-column.path = paste(getwd(),Column.folder, Column.phase, sep = "/")
+remove.data.start = 2 #in cm. Remove data the first XX cm. Use 0 if no data needs to be removed.
+remove.data.end = 28 # in cm Remove data starting ## cm. Use 30 (or the lenght of the column) is no data needs to be removed.
+
+clamp.threshold = 1.85 # Approx thickness of the clamp and a safety factor
+
+column.path = paste(home.path,Column.folder, Column.phase, "Images_raw", sep = "/")
 
 #Changing working directory so it is easy to import images 
 
 setwd(column.path)
-#getwd() #checking
 
 ###########################################################################
-# Defining paths
+# Defining paths. Make sure the folders in the path exist in the Column Folder and Treatment
 ###############################
-plots.path = paste("/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test/Plots.out", Column.folder,Column.phase, sep = "/")
-rates.path = paste0("/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test/Rates.out/", Column.folder)
-processed.img.path = paste("/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test/Processed.out", Column.folder,Column.phase, sep = "/")
-img.path = paste("/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test/Img.out",Column.folder,Column.phase, sep = "/")
-crop.path = paste("/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test/Crop.out",Column.folder,Column.phase, sep = "/")
-matrix.path = paste("/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test/Matrix.out",Column.folder,Column.phase, sep = "/")
-input.path = "/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test/Input"
-plots.path.clean = paste("/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test/Plots.out.clean", Column.folder,Column.phase, sep = "/")
-img.path.clean = paste("/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test/Img.out.clean",Column.folder,Column.phase, sep = "/")
+plots.path = paste0(home.path,Column.folder,"/", Column.phase, "/Plots_out")
+rates.path = paste0(home.path,Column.folder, "/",Column.phase, "/Rates_out")
+processed.img.path = paste0(home.path,Column.folder,"/", Column.phase, "/Images_processed")
+img.path = paste0(home.path,Column.folder,"/", Column.phase, "/Images_out")
+crop.path = paste0(home.path,Column.folder,"/", Column.phase, "/Images_cropped")
+matrix.path = paste0(home.path,Column.folder,"/", Column.phase, "/Matrix")
+input.path = paste0(home.path,"Input")
+plots.path.clean = paste0(home.path,Column.folder,"/",Column.phase, "/Plots_clean")
+img.path.clean = paste0(home.path,Column.folder, "/",Column.phase, "/Images_clean")
 ###############################
 
 #############
 # Read in input calibration curve parameters and clamp location per column
-#NOTE: The user must pre-populate column and tube number as well as the calibration values into the input file before running this code. Follow instructions in the first row of input file. 
+#NOTE: The user must pre-populate column number as well as the calibration values into the input file before running this code. 
 
-#############################################################################
-# Set up working directory and manually identify Column number
+#The user must run the Find_Column_parameters.R code to populate all the cells required in the Input file. 
 
-Column.number = 0
-input.path = "/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/Input"
+#Follow instructions in the first row of input file. 
 
 #############
 # Read in input calibration curve parameters and clamp location per column
-
-input.files = list.files(path = input.path, pattern = ".csv", full.names = T)
-input = read.csv(input.files[1], stringsAsFactors = F, skip = 1)
-
-# Subset to the column that you are working with
-
-input.column = subset(input, input$column == Column.number)
-
-Ro = input.column$Ro
-a = input.column$a
-Ksv = input.column$Ksv
-
-
 
 input.files = list.files(path = input.path, pattern = ".csv")
 input.need = input.files[grep(pattern = Column.phase, x = input.files)]
-input = read.csv(paste0(input.path,"/",input.need), stringsAsFactors = F)
+input = read.csv(paste0(input.path,"/",input.need), stringsAsFactors = F, skip = 1)
 
 # Subset to the column that you are working with
 
@@ -82,6 +72,7 @@ Ro = input.column$Ro
 a = input.column$a
 Ksv = input.column$Ksv
 
+rot.num = input.column$rot.num
 # Input starting x-axis values for the clamps. 
 
 clamp1 = input.column$clamp1 # in cm 
@@ -89,13 +80,12 @@ clamp2 =input.column$clamp2  # in cm
 clamp3 = input.column$clamp3  #in cm
 clamp4 = input.column$clamp4  #in cm
 clamp5 = input.column$clamp5  #in cm
-clamp.threshold = 1.85 # Approx thickness of the clamp and a safety factor
-# Make it higher than 1.5 to be safe
+
 ##############################################################
 # Read in the images
 #############################################################
 
-red.img = list.files(pattern = "R.tif") # Add a line that says to run images every hour rather than 5 min
+red.img = list.files(pattern = "R.tif") 
 green.img = list.files(pattern = "G1.tif")
 
 # Checking consisency across number of images
@@ -103,8 +93,6 @@ if (length(red.img)!= length(green.img)){
   cat(red("Error: Number of red and green images don't match", "Please check!\n"))
 }else{
 for (i in 1:length(red.img)){
-#for (i in 1:69){
-#for (i in 70:length(red.img)){    
 
   graphics.off()
   
@@ -113,8 +101,6 @@ red.imgs = raster(red.img[i])
 green.imgs = raster(green.img[i])
 #plot(green.imgs)
 name = gsub("_R.tif","",red.img[i])
-
-
 
 # Perform the basic image processing, subtraction and division 
 
@@ -144,23 +130,16 @@ pixel.max.value.clean = R.clean[which.max(R.clean)]
 
 # Apply the calibration curve
 
-# result = (Ro - R)/(Ksv*(R-Ro*a))
 result = (Ro - R.clean)/(Ksv*(R.clean-Ro*a))
 #plot(result)
 
-
-#cuts = seq(0,9.5, by = 0.5)
 cuts = seq(0,DOmax, by = 0.5)
 
-#col1 = colorRampPalette(c("black","purple","blue","green","yellow","orange","red"), interpolate= "linear") 
-
-#This is a color friendly palette
+#This is a color blind friendly palette
 col1 = colorRampPalette(c('#313695', '#4575b4','#74add1','#abd9e9','#e0f3f8','#ffffbf','#fee090','#fdae61','#f46d43','#d73027','#a50026'))
                         
 
-
 #plot with defined breaks
-#plot(result, breaks=cuts, col = col1((length(cuts)-1)), zlim = c(0,DOmax),xlim=c(xmin(result),xmax(result)), ylim=c(ymin(result), ymax(result)))
 
 pixel.min.result = result[which.min(result)]
 pixel.max.result = result[which.max(result)]
@@ -169,32 +148,22 @@ pixel.max.result = result[which.max(result)]
 # Set extent of the raster to the length of the column
 x.min.cm = input.column$x.min.in.cm #in cm
 x.max.cm = input.column$x.max.in.cm #in cm
-col.len = extent(x.min.cm,x.max.cm,0, ((x.max.cm-x.min.cm)*nrow(result))/ncol(result)) #These numbers were manually adjusted to get the 30 cm of the column, hopefully
+col.len = extent(x.min.cm,x.max.cm,0, ((x.max.cm-x.min.cm)*nrow(result))/ncol(result)) #These numbers were manually adjusted to get the 30 cm in the Find_Column_parameter.R code
+
 result2 = setExtent(result,col.len)
 
-#plot(result2, breaks=cuts, col = col1((length(cuts)-1)), zlim = c(0,DOmax),xlim=c(xmin(result2),xmax(result2)), ylim=c(0, ymax(result2)))
-     #, yaxt = "n")
-
-#####################################################
-#Examine if your column needs to be slightly rotated if not comment from #A to A# out and uncomment #C
-######################################################
-#A Rotate image
+# Rotate image
 rotate <- function(x, angle=0, resolution=res(x)) {
   y <- x; crs(y) <- "+proj=aeqd +ellps=sphere +lat_0=90 +lon_0=0"
   projectRaster(y, res=resolution,
                 crs=paste0("+proj=aeqd +ellps=sphere +lat_0=90 +lon_0=", -angle))
 }
 
- rotated.image = rotate(result2, -0.2)
- #plot(rotated.image,  breaks=cuts, col = col1((length(cuts)-1)), zlim = c(0,DOmax))
-#B
+ rotated.image = rotate(result2, rot.num)
 
-# #C 
-# rotated.image = result2
-# # end
+# Crop images
 
 crop.extent = extent(input.column$crop.extent.x1,input.column$crop.extent.x2,input.column$crop.extent.y1,input.column$crop.extent.y2)
-#crop.extent = extent(0,30,5,12)
 
 result.cropped = crop(rotated.image,crop.extent)
 
@@ -208,27 +177,8 @@ dev.off()
 crop.extent = extent(input.column$crop.extent.x1,input.column$crop.extent.x2,(input.column$crop.extent.y1+1),(input.column$crop.extent.y2-1)) #Area of interest
 cropped.interest = crop(result.cropped,crop.extent)
 
-#plot(cropped.interest, breaks=cuts, col = col1((length(cuts)-1)), zlim = c(0,DOmax),xlim=c(xmin(cropped.interest),xmax(cropped.interest)),ylim=c(ymin(cropped.interest), ymax(cropped.interest)))
-#, interpolate = TRUE)
-
 
 ### Remove clamps
-
-# ###################################################
-# ##### TEST ONLY. Comment out and delete once all of the clamp locations have been figured out.
-# 
-# img.matrix = as.matrix(cropped.interest)
-# 
-# x.in.cm = seq(xres(cropped.interest),(ncol(cropped.interest)*xres(cropped.interest)), by = xres(cropped.interest))
-# 
-# do = rowMeans(t(img.matrix), na.rm = TRUE)
-# 
-# data = na.omit(as.data.frame(cbind(x.in.cm,do)))
-# plot_ly(data = data, x = ~x.in.cm,y = ~do)
-
-##################################################
-#### End of test
-############################################
 
 clamp1.x.in.cm = seq(clamp1,(clamp1+clamp.threshold), by = xres(cropped.interest))
 
@@ -271,31 +221,9 @@ pdf(paste0(img.path,"/",name,"_",Column.folder,"_", Column.phase,"_Processed",".
 plot(cropped.interest, breaks=cuts, col = col1((length(cuts)-1)), zlim = c(0,DOmax),xlim=c(xmin(cropped.interest),xmax(cropped.interest)),xlab="Column Length (cm)", yaxt = "n") # This is to not print the y axis
 dev.off()
 
-
-# Create a smoothing window for raster layer 
-#smallest spatial feature that I want to resolve, Let's say a mm \then we could look into 
-#Calculate focal ("moving window") values for the neighborhood of focal cells using a matrix of weights, perhaps in combination with a function.
-
-#window = matrix(1/9,nrow = 3, ncol = 3)
-#test = focal(cropped.interest, window)
-
-## or
-
-## Disaggregate a RasterLayer to create a new RasterLayer with a higher resolution (smaller cells). The values in the new RasterLayer are the same as in the larger original cells unless you specify method="bilinear", in which case values are locally interpolated (using the resample function). The number in the function represents the integer. amount of disaggregation expressed as number of cells (horizontally and vertically).
-
-#test = disaggregate(cropped.interest,5,method = "bilinear")
-
-# png(paste0(img.path,"/",name,"_Processed",".png"))
-# plot(test, breaks=cuts, col = col1((length(cuts)-1)), zlim = c(0,DOmax),xlab="Column Length (cm)", yaxt = "n") # This is to not print the y axis
-# dev.off()
-
-
 # Extract pixel values
 
-# Idea, we could extract all the values in the width of the column and take an average of the values to get the profile going 
-
 img.matrix = as.matrix(cropped.interest)
-#img.matrix = as.matrix(test) # After smoothing. Looks terrible, check with Matt
 
 x.in.cm = seq(xres(cropped.interest),(ncol(cropped.interest)*xres(cropped.interest)), by = xres(cropped.interest))
 

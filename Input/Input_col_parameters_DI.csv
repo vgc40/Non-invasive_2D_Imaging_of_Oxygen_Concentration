@@ -1,0 +1,3 @@
+Required,Required,Required,Required,Fill_in_after_Col_parameter_code,Fill_in_after_Col_parameter_code,Fill_in_after_Col_parameter_code,Fill_in_after_Col_parameter_code,Fill_in_after_Col_parameter_code,Fill_in_after_Col_parameter_code,Fill_in_after_Col_parameter_code,Fill_in_after_Col_parameter_code,Fill_in_after_Col_parameter_code,Fill_in_after_Col_parameter_code,Fill_in_after_Col_parameter_code,Fill_in_after_Col_parameter_code
+column,Ro,a,Ksv,x.min.in.cm,x.max.in.cm,rot.num,crop.extent.x1,crop.extent.x2,crop.extent.y1,crop.extent.y2,clamp1,clamp2,clamp3,clamp4,clamp5
+1,1.459,0,0.281,-5,36,-0.55,0,30,6,13.5,2.36,12.59,26.4,0,0
