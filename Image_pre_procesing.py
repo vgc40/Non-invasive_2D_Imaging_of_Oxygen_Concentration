@@ -10,8 +10,8 @@ import cv2
 
 
 
-mypath='//pnl/projects/SBR_SFA/RC4/VGC/Images'
-outpath='//pnl/projects/SBR_SFA/RC4/VGC/Images/output3'
+mypath='C:/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Script_images/Images/Column_1/Sampling'
+outpath='C:/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Script_images/Images/Column_1/Sampling/output'
 
 if not os.path.exists(outpath):
     os.makedirs(outpath)
