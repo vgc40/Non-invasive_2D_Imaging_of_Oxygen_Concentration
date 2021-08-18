@@ -1,6 +1,12 @@
-setwd("C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/")
+#setwd("C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/")
+#rm(list=ls());graphics.off()
+
 rm(list=ls());graphics.off()
 
+home.path = ("C:/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Script_images")
+home.path = ("C:/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test")
+
+setwd (home.path)
 # Install packages
 #install.packages("raster"); install.packages("rgdal");install.packages("tmap");install.packages('Kendall')
 
@@ -19,14 +25,23 @@ graphics.off()
 #################################################################
 # Set up working directory and manually identify Column number
 
-Column.number = 1 
-input.path = "C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/Input"
+Column.number = 0 
+Column.folder = "Column_0"
+Column.phase = "DI"  # Phase options are DI, Injection and Sampling
 
+input.path = paste0(home.path,"/Input")
+#input.path = "C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/Input"
+
+column.path = paste(home.path,"Images", Column.folder, Column.phase, "output", sep = "/")
+
+#Changing working directory so it is easy to import images 
+
+setwd(column.path)
 ##############################################################
 # Read in input calibration curve parameters and clamp location per column
 
 input.files = list.files(path = input.path, pattern = ".csv", full.names = T)
-input = read.csv(input.files[1], stringsAsFactors = F, skip = 1)
+input = read.csv(input.files[1], stringsAsFactors = F, skip = 0)
 
 # Subset to the column that you are working with
 
@@ -41,14 +56,15 @@ Ksv = input.column$Ksv
 # If the column or positions of the clamps did not move through the duration of the experiment, then we only need to load one image to find the column parameters.
 #############################################################
 
-img.path = ("C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/Images/output")
+#img.path = ("C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/Images/output")
+img.path = column.path
 
 red.imgs = list.files(path = img.path, pattern = "R.tif", full.names = T) # 
 green.imgs = list.files(path = img.path,pattern = "G1.tif", full.names = T)
 
-red.img = raster(red.imgs[1])
+red.img = raster(red.imgs[99])
 plot(red.img)
-green.img = raster(green.imgs[1])
+green.img = raster(green.imgs[99])
 plot(green.img)
 
 # Perform the basic image processing to visualize the image better
@@ -64,7 +80,7 @@ pixel.min.value = R[which.min(R)]
 pixel.max.value = R[which.max(R)]
 
 # # reassign cells with outlier values of Inf to NA
-DOmax = 12
+DOmax = 15
 f <- function(x) {
   #x[x == Inf] <- NA
   x[x <= (a+(1-a)*(1/(1+Ksv*DOmax)))*Ro] <- NA #Fixed to have a max DO value of 10
@@ -96,8 +112,8 @@ plot(result, breaks=cuts, col = col1((length(cuts)-1)), zlim = c(0,DOmax),xlim=c
 pixel.min.result = result[which.min(result)]
 pixel.max.result = result[which.max(result)]
 
-x.min.cm = -5 #Manually edit value in cm
-x.max.cm = 36 #Manually edit value in cm
+x.min.cm = -4 #Manually edit value in cm
+x.max.cm = 35 #Manually edit value in cm
 
 col.len = extent(x.min.cm,x.max.cm,0, ((x.max.cm-x.min.cm)*nrow(result))/ncol(result)) 
 
@@ -121,10 +137,11 @@ rotate <- function(x, angle=0, resolution=res(x)) {
 
 # Manually adjust angle. 
 
- rotated.image = rotate(result2, -0.55) # Manually edit the number here to change the angle
+ rotated.image = rotate(result2, -0.2) # Manually edit the number here to change the angle
  
  plot(rotated.image, breaks=cuts, col = col1((length(cuts)-1)), zlim = c(0,DOmax),xlim=c(xmin(rotated.image),xmax(rotated.image)), ylim=c(ymin(rotated.image), ymax(rotated.image)))
- abline (h = 6)
+ abline (h = 5.2)
+ abline (h = 12.25)
  
  # Once satisfied with the rotated image, copy the angle in the rot.num cell in the Input file
  
@@ -133,7 +150,7 @@ rotate <- function(x, angle=0, resolution=res(x)) {
  # Optimize x1,x2 and y1,y2 coordinates to crop the column image only to the optode portion
 ################################################################
 
-crop.extent = extent(0,30,6,13.5) # Optimize this values in cm the first to values are on the x axis and the second ones ar in the y axis
+crop.extent = extent(0,30,7.4,14.4) # Optimize this values in cm the first to values are on the x axis and the second ones ar in the y axis
 
 result.cropped = crop(rotated.image,crop.extent)
 
