@@ -10,8 +10,8 @@ import cv2
 
 
 
-mypath='C:/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test/Images/Column_0/DI'
-outpath='C:/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test/Images/Column_0/DI/output'
+mypath='home.path/Example_Images'
+outpath='home.path/Example_Images/output'
 
 if not os.path.exists(outpath):
     os.makedirs(outpath)
