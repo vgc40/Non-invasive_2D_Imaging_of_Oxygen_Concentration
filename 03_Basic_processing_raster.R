@@ -1,6 +1,6 @@
 rm(list=ls());graphics.off()
 
-home.path = ("C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/")
+home.path = ""
 setwd (home.path)
 
 # Install packages
@@ -28,7 +28,7 @@ remove.data.end = 28 # in cm Remove data starting ## cm. Use 30 (or the length o
 
 clamp.threshold = 1.85 # Approx thickness of the clamp and a safety factor
 
-column.path = paste(home.path,Column.folder, Column.phase, "Images_raw", sep = "/")
+column.path = paste(home.path,Column.folder, Column.phase, "Example_Images","output", sep = "/")
 
 #Changing working directory so it is easy to import images 
 
