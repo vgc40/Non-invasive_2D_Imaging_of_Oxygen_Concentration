@@ -13,5 +13,4 @@ The scripts needed for the image processing are the following:
  This code is intended to help the user find the values for the necessary Column_Input_paramers parameters needed in the Input_col_parameters_DI.csv
 
 - 03_Basic_processing_raster.R      
-
-Script that converts raw optode images into usable data. For more details see "Optode Image Processing" methods in Garayburu-Caruso et al., 2021. 
+ Script that converts raw optode images into usable data. For more details see "Optode Image Processing" methods in Garayburu-Caruso et al., 2021. 
