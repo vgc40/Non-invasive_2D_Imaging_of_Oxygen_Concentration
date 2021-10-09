@@ -1,10 +1,6 @@
-#setwd("C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/")
-#rm(list=ls());graphics.off()
-
 rm(list=ls());graphics.off()
 
-home.path = ("C:/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Script_images")
-home.path = ("C:/Users/gara009/OneDrive - PNNL/Documents/Column experiments/Methods_test")
+home.path = ""
 
 setwd (home.path)
 # Install packages
@@ -29,10 +25,10 @@ Column.number = 0
 Column.folder = "Column_0"
 Column.phase = "DI"  # Phase options are DI, Injection and Sampling
 
-input.path = paste0(home.path,"/Input")
-#input.path = "C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/Input"
+input.path = paste0(home.path,"/Column_Input_paramers")
 
-column.path = paste(home.path,"Images", Column.folder, Column.phase, "output", sep = "/")
+
+column.path = paste(home.path,"Example_Images", "output", sep = "/")
 
 #Changing working directory so it is easy to import images 
 
@@ -56,7 +52,6 @@ Ksv = input.column$Ksv
 # If the column or positions of the clamps did not move through the duration of the experiment, then we only need to load one image to find the column parameters.
 #############################################################
 
-#img.path = ("C:/Users/gara009/OneDrive - PNNL/Documents/GitHub/Non-invasive_2D_Imaging_of_Oxygen_Concentration/Images/output")
 img.path = column.path
 
 red.imgs = list.files(path = img.path, pattern = "R.tif", full.names = T) # 
@@ -174,4 +169,4 @@ plot_ly(data = data, x = ~x.in.cm,y = ~do)
 
 # Once satisfied with the selected range place the x values in the clamp1, clamp2, clamp3, clamp4, clamp5 cells of the Input file depending on how many 
 
-# If no clamp available fill the cell value with 0
+# If no clamp available fill the cell value with -9999
