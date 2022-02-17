@@ -1,5 +1,5 @@
 # Non-invasive_2D_Imaging_of_Oxygen_Concentration
-This GitHub repository is associated with the publication “Non-invasive 2-D Imaging of Dissolved Oxygen Concentration in Flow-Through Sediment Columns” submitted to PLoS One (Garayburu-Caruso et al., 2021). 
+This GitHub repository is associated with the publication “Non-invasive 2-D Imaging of Dissolved Oxygen Concentration in Flow-Through Sediment Columns” submitted to Frontiers in Water (Garayburu-Caruso et al., 2022). 
 
 This work presents a novel application of planar optode technology to sediment columns that allows the study of well-constrained flow fields without the need to assume completely homogeneous flow. We introduce a flow-through column with the interior coated in an oxygen sensing film and a series of sampling ports as a unique tool capable of capturing changes in DO at high frequency (10 s) and spatial (< 1 mm) resolution across the length of a column. 
 
